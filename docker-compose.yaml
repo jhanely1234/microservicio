@@ -1,0 +1,77 @@
+version: '3'
+services:
+  server_url:
+    build: ./SERVER_URL_AUTH
+    ports:
+      - "4000:3000" # Externo 4000 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_AUTH/.env
+    networks:
+      - medinet
+
+  reserva:
+    build: ./SERVER_URL_RESERVA
+    ports:
+      - "4001:3000" # Externo 4001 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_RESERVA/.env
+    networks:
+      - medinet
+
+  reporte:
+    build: ./SERVER_URL_REPORTE
+    ports:
+      - "4002:3000" # Externo 4002 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_REPORTE/.env
+    networks:
+      - medinet
+
+  paciente:
+    build: ./SERVER_URL_PACIENTE
+    ports:
+      - "4003:3000" # Externo 4003 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_PACIENTE/.env
+    networks:
+      - medinet
+
+  medico:
+    build: ./SERVER_URL_MEDICO
+    ports:
+      - "4004:3000" # Externo 4004 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_MEDICO/.env
+    networks:
+      - medinet
+
+  historial:
+    build: ./SERVER_URL_HISTORIAL
+    ports:
+      - "4005:3000" # Externo 4005 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_HISTORIAL/.env
+    networks:
+      - medinet
+
+  especialidades:
+    build: ./SERVER_URL_ESPECIALIDADES
+    ports:
+      - "4006:3000" # Externo 4006 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_ESPECIALIDADES/.env
+    networks:
+      - medinet
+
+  consultas:
+    build: ./SERVER_URL_CONSULTAS
+    ports:
+      - "4007:3000" # Externo 4007 -> Interno 3000
+    env_file:
+      - ./SERVER_URL_CONSULTAS/.env
+    networks:
+      - medinet
+
+networks:
+  medinet:
+    driver: bridge
