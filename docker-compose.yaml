@@ -1,74 +1,176 @@
-version: '3'
+version: "3"
+
 services:
-  server_url:
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=tu_email@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Panel de control de Traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    networks:
+      - medinet
+
+  auth:
     build: ./SERVER_URL_AUTH
     ports:
-      - "4000:3000" # Externo 4000 -> Interno 3000
+      - "4000:3000"
     env_file:
       - ./SERVER_URL_AUTH/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls.certresolver=myresolver"
+      - "traefik.http.services.auth.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-auth.stripPrefix.prefixes=/auth"
+      - "traefik.http.routers.auth.middlewares=strip-auth@docker"
     networks:
       - medinet
 
   reserva:
     build: ./SERVER_URL_RESERVA
     ports:
-      - "4001:3000" # Externo 4001 -> Interno 3000
+      - "4001:3000"
     env_file:
       - ./SERVER_URL_RESERVA/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reserva.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/reservas`)"
+      - "traefik.http.routers.reserva.entrypoints=websecure"
+      - "traefik.http.routers.reserva.tls.certresolver=myresolver"
+      - "traefik.http.services.reserva.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-reserva.stripPrefix.prefixes=/reservas"
+      - "traefik.http.routers.reserva.middlewares=strip-reserva@docker"
     networks:
       - medinet
 
   reporte:
     build: ./SERVER_URL_REPORTE
     ports:
-      - "4002:3000" # Externo 4002 -> Interno 3000
+      - "4002:3000"
     env_file:
       - ./SERVER_URL_REPORTE/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reporte.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/reporte`)"
+      - "traefik.http.routers.reporte.entrypoints=websecure"
+      - "traefik.http.routers.reporte.tls.certresolver=myresolver"
+      - "traefik.http.services.reporte.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-reporte.stripPrefix.prefixes=/reporte"
+      - "traefik.http.routers.reporte.middlewares=strip-reporte@docker"
     networks:
       - medinet
 
   paciente:
     build: ./SERVER_URL_PACIENTE
     ports:
-      - "4003:3000" # Externo 4003 -> Interno 3000
+      - "4003:3000"
     env_file:
       - ./SERVER_URL_PACIENTE/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paciente.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/pacientes`)"
+      - "traefik.http.routers.paciente.entrypoints=websecure"
+      - "traefik.http.routers.paciente.tls.certresolver=myresolver"
+      - "traefik.http.services.paciente.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-pacientes.stripPrefix.prefixes=/pacientes"
+      - "traefik.http.routers.paciente.middlewares=strip-pacientes@docker"
     networks:
       - medinet
 
   medico:
     build: ./SERVER_URL_MEDICO
     ports:
-      - "4004:3000" # Externo 4004 -> Interno 3000
+      - "4004:3000"
     env_file:
       - ./SERVER_URL_MEDICO/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.medico.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/medicos`)"
+      - "traefik.http.routers.medico.entrypoints=websecure"
+      - "traefik.http.routers.medico.tls.certresolver=myresolver"
+      - "traefik.http.services.medico.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-medico.stripPrefix.prefixes=/medicos"
+      - "traefik.http.routers.medico.middlewares=strip-medico@docker"
     networks:
       - medinet
 
   historial:
     build: ./SERVER_URL_HISTORIAL
     ports:
-      - "4005:3000" # Externo 4005 -> Interno 3000
+      - "4005:3000"
     env_file:
       - ./SERVER_URL_HISTORIAL/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.historial.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/historiales`)"
+      - "traefik.http.routers.historial.entrypoints=websecure"
+      - "traefik.http.routers.historial.tls.certresolver=myresolver"
+      - "traefik.http.services.historial.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-historial.stripPrefix.prefixes=/historiales"
+      - "traefik.http.routers.historial.middlewares=strip-historial@docker"
     networks:
       - medinet
 
   especialidades:
     build: ./SERVER_URL_ESPECIALIDADES
     ports:
-      - "4006:3000" # Externo 4006 -> Interno 3000
+      - "4006:3000"
     env_file:
       - ./SERVER_URL_ESPECIALIDADES/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.especialidades.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/especialidades`)"
+      - "traefik.http.routers.especialidades.entrypoints=websecure"
+      - "traefik.http.routers.especialidades.tls.certresolver=myresolver"
+      - "traefik.http.services.especialidades.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-especialidades.stripPrefix.prefixes=/especialidades"
+      - "traefik.http.routers.especialidades.middlewares=strip-especialidades@docker"
     networks:
       - medinet
 
   consultas:
     build: ./SERVER_URL_CONSULTAS
     ports:
-      - "4007:3000" # Externo 4007 -> Interno 3000
+      - "4007:3000"
     env_file:
       - ./SERVER_URL_CONSULTAS/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.consultas.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/consultas`)"
+      - "traefik.http.routers.consultas.entrypoints=websecure"
+      - "traefik.http.routers.consultas.tls.certresolver=myresolver"
+      - "traefik.http.services.consultas.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-consultas.stripPrefix.prefixes=/consultas"
+      - "traefik.http.routers.consultas.middlewares=strip-consultas@docker"
+    networks:
+      - medinet
+
+  whatsapp:
+    build: ./SERVER_URL_WHATSAPP
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./SERVER_URL_WHATSAPP/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whatsapp.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/whatsapp`)"
+      - "traefik.http.routers.whatsapp.entrypoints=websecure"
+      - "traefik.http.routers.whatsapp.tls.certresolver=myresolver"
+      - "traefik.http.services.whatsapp.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.strip-whatsapp.stripPrefix.prefixes=/whatsapp"
+      - "traefik.http.routers.whatsapp.middlewares=strip-whatsapp@docker"
     networks:
       - medinet
 
