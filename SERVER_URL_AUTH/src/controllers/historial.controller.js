@@ -193,24 +193,21 @@ export const enviarRecetaPorWhatsApp = async (consultaId) => {
 
     // Crear el mensaje que será enviado por WhatsApp
     const message = `
-Estimado/a ${paciente.name} ${paciente.lastname}, su receta es la siguiente:
-
-Motivo de Consulta: ${consulta.motivo_consulta || "No especificado"}
-Signos Vitales:
-- Fc: ${consulta.signos_vitales[0]?.Fc || "N/A"}
-- Fr: ${consulta.signos_vitales[0]?.Fr || "N/A"}
-- Temperatura: ${consulta.signos_vitales[0]?.Temperatura || "N/A"}
-- Peso: ${consulta.signos_vitales[0]?.peso || "N/A"}
-- Talla: ${consulta.signos_vitales[0]?.talla || "N/A"}
-
-Examen Físico: ${consulta.examen_fisico || "No especificado"}
-Diagnóstico: ${consulta.diagnostico || "No especificado"}
-Conducta: ${consulta.conducta || "No especificado"}
-Receta: ${consulta.receta || "No se ha prescrito receta"}
-
-Atendido por: Dr./Dra. ${medico.name} ${medico.lastname}
-Fecha de Consulta: ${consulta.fechaHora.toLocaleDateString()}
+    🌟 Estimado/a ${paciente.name} ${paciente.lastname}, 
+    
+    📝 *Su receta médica es la siguiente:*
+    
+    📋 *Motivo de Consulta:* ${consulta.motivo_consulta || "No especificado"}
+    
+    💊 *Receta:* ${consulta.receta || "No se ha prescrito receta"}
+    
+    👨‍⚕️ Atendido por: Dr./Dra. ${medico.name} ${medico.lastname}
+    
+    📅 *Fecha de Consulta:* ${consulta.fechaHora.toLocaleDateString()}
+    
+    Le deseamos una pronta recuperación. ¡Cuide su salud! 💚
     `;
+
 
     // Llamar a la API externa para enviar el mensaje por WhatsApp
     const apiResponse = await axios.post(process.env.WHATSAPP_API_URL, {
