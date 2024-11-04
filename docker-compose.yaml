@@ -21,12 +21,14 @@ services:
     networks:
       - medinet
 
+#http 
   auth:
     build: ./SERVER_URL_AUTH
     ports:
       - "4000:3000"
     env_file:
       - ./SERVER_URL_AUTH/.env
+#https
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=Host(`mediconsulta.zapto.org`) && PathPrefix(`/auth`)"
